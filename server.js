@@ -60,6 +60,4 @@ app.get('/get-agent', (req, res) => {
 	res.json(selectedAgent)
 })
 
-app.listen(PORT, () => {
-	console.log('http://localhost:' + PORT)
-})
+module.exports = app;
