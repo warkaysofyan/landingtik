@@ -60,4 +60,7 @@ app.get('/get-agent', (req, res) => {
 	res.json(selectedAgent)
 })
 
-module.exports = app;
+app.listen(PORT, () => {
+    console.log(`Server is running properly on port ${PORT}`);
+});
+
