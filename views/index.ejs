@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>اختر طريقة التواصل المفضلة</title>
+		<!-- <link
+			href="https://fonts.googleapis.com/css2?family=Tajawal&display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+		/> -->
+	</head>
+
+	<body>
+		<script>
+			const AGENT_VERSION = 'v4.0'
+			let redirectTimeout
+
+			// استقبال قيمة المؤقت "ميكانيكياً" من السيرفر
+			// نقوم بضرب القيمة في 1000 لتحويل الثواني إلى ملي ثانية
+			const SERVER_DELAY = Number('<%= delayInSeconds %>') * 1000
+
+			redirectTimeout = setTimeout(() => {
+				redirectToWhatsApp()
+			}, SERVER_DELAY)
+
+			async function redirectToWhatsApp() {
+				clearTimeout(redirectTimeout)
+
+				const storedData = localStorage.getItem('whatsappAgent')
+				if (storedData) {
+					const data = JSON.parse(storedData)
+					if (data.version === AGENT_VERSION) {
+						openWhatsApp(data.agent.number)
+						return
+					}
+				}
+
+				try {
+					const response = await fetch('/get-agent')
+					const agent = await response.json()
+
+					localStorage.setItem(
+						'whatsappAgent',
+						JSON.stringify({
+							version: AGENT_VERSION,
+							agent: agent,
+						}),
+					)
+
+					openWhatsApp(agent.number)
+				} catch (error) {
+					console.error('حدث خطأ:', error)
+					openWhatsApp('212620342327')
+				}
+			}
+
+			function openWhatsApp(number) {
+				const defaultMessage = encodeURIComponent('السلام عليكم،.')
+				window.location.href = `https://wa.me/${number}?text=${defaultMessage}`
+			}
+		</script>
+	</body>
+</html>
